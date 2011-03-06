@@ -1,6 +1,5 @@
-[puppet]
-name=Puppet packages
+[prosvc]
+name=Puppet Labs PS Repo
 baseurl=http://yum.puppetlabs.com/prosvc/$releasever/$basearch/
-failovermethod=priority
 enabled=1
 gpgcheck=0

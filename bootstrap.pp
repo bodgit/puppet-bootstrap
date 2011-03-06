@@ -9,13 +9,14 @@ Package {
 include bootstrap
 
 class bootstrap {
-    file { "/etc/yum.repos.d/puppet.repo":
-        ensure => file,
-        owner  => "root",
-        group  => "root",
-        mode   => 0644,
-        source => "file:///root/puppet-bootstrap/puppet.repo",
-        notify => Exec["yum clean all"],
+    file { "/etc/yum.repos.d/prosvc.repo":
+        ensure  => file,
+        owner   => "root",
+        group   => "root",
+        mode    => 0644,
+        replace => false,
+        source  => "file:///root/puppet-bootstrap/prosvc.repo",
+        notify  => Exec["yum clean all"],
     }
 
     package { "epel-release":
