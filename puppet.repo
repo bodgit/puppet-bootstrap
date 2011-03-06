@@ -1,0 +1,6 @@
+[puppet]
+name=Puppet packages
+baseurl=http://yum.puppetlabs.com/prosvc/$releasever/$basearch/
+failovermethod=priority
+enabled=1
+gpgcheck=0
