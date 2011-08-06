@@ -1,5 +1,0 @@
-[prosvc]
-name=Puppet Labs PS Repo
-baseurl=http://yum.puppetlabs.com/prosvc/$releasever/$basearch/
-enabled=1
-gpgcheck=0

@@ -1,0 +1,30 @@
+# WARNING: This repo is only for testing.
+# Don't count on it being updated or stable for use on production systems!
+
+[tmz-puppet]
+name=Puppet for EL $releasever - $basearch
+baseurl=http://tmz.fedorapeople.org/repo/puppet/epel/$releasever/$basearch
+enabled=1
+gpgcheck=1
+gpgkey=http://tmz.fedorapeople.org/repo/RPM-GPG-KEY-tmz
+
+[tmz-puppet-source]
+name=Puppet for EL $releasever - Source
+baseurl=http://tmz.fedorapeople.org/repo/puppet/epel/$releasever/SRPMS
+enabled=0
+gpgcheck=1
+gpgkey=http://tmz.fedorapeople.org/repo/RPM-GPG-KEY-tmz
+
+[tmz-puppet-testing]
+name=Puppet for EL $releasever - $basearch
+baseurl=http://tmz.fedorapeople.org/repo/puppet/epel/testing/$releasever/$basearch
+enabled=0
+gpgcheck=1
+gpgkey=http://tmz.fedorapeople.org/repo/RPM-GPG-KEY-tmz
+
+[tmz-puppet-testing-source]
+name=Puppet for EL $releasever - Source
+baseurl=http://tmz.fedorapeople.org/repo/puppet/epel/testing/$releasever/SRPMS
+enabled=0
+gpgcheck=1
+gpgkey=http://tmz.fedorapeople.org/repo/RPM-GPG-KEY-tmz

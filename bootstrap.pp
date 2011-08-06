@@ -9,20 +9,38 @@ Package {
 include bootstrap
 
 class bootstrap {
-    file { "/etc/yum.repos.d/prosvc.repo":
+    # Current Puppet packages won't work if SELinux is enforcing
+    if ( $selinux_enforced == "true" ) {
+        fail( "SELinux is enforcing" )
+    }
+
+    file { "/etc/yum.repos.d/puppet.repo":
         ensure  => file,
         owner   => "root",
         group   => "root",
         mode    => 0644,
         replace => false,
-        source  => "file:///root/puppet-bootstrap/prosvc.repo",
+        source  => "file:///root/puppet-bootstrap/puppet.repo",
         notify  => Exec["yum clean all"],
+    }
+
+    $epel_release = $lsbmajdistrelease ? {
+        5 => 4,
+        6 => 5,
     }
 
     package { "epel-release":
         ensure   => present,
         provider => rpm,
-        source   => "http://download.fedoraproject.org/pub/epel/${lsbmajdistrelease}/${architecture}/epel-release-5-4.noarch.rpm",
+        source   => "http://download.fedoraproject.org/pub/epel/${lsbmajdistrelease}/${architecture}/epel-release-${lsbmajdistrelease}-${epel_release}.noarch.rpm",
+        require  => undef,
+        notify   => Exec["yum clean all"],
+    }
+
+    package { "passenger-release":
+        ensure   => present,
+        provider => rpm,
+        source   => "http://passenger.stealthymonkeys.com/rhel/${lsbmajdistrelease}/passenger-release.noarch.rpm",
         require  => undef,
         notify   => Exec["yum clean all"],
     }
@@ -44,31 +62,8 @@ class bootstrap {
         ensure => present,
     }
 
-    package { "rubygem-rack":
+    package { "mod_passenger":
         ensure => present,
-    }
-
-    # This should possibly be a dependency of rubygem-passenger as things
-    # like passenger-status don't work without it
-    package { "rubygem-rake":
-        ensure => present,
-    }
-
-    package { "rubygem-passenger":
-        ensure => present,
-    }
-
-    file { "/etc/httpd/conf.d/passenger.conf":
-        ensure  => file,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
-        source  => "file:///root/puppet-bootstrap/passenger.conf",
-        require => [
-            Package["httpd"],
-            Package["rubygem-passenger"],
-        ],
-        notify  => Service["httpd"],
     }
 
     file { "/etc/httpd/conf.d/puppetmasterd.conf":
@@ -122,7 +117,7 @@ class bootstrap {
             File["/srv/www/puppet.${domain}"],
             File["/srv/www/puppet.${domain}/public"],
             File["/srv/www/puppet.${domain}/tmp"],
-            Package["rubygem-rack"],
+            Package["mod_passenger"],
         ],
         notify  => Service["httpd"],
     }
@@ -142,7 +137,10 @@ class bootstrap {
         enable     => false,
         hasrestart => true,
         hasstatus  => true,
-        require    => Package["puppet-server"],
+        require    => [
+            Package["puppet-server"],
+            File["/etc/puppet/puppet.conf"],
+        ],
     }
 
     # Short of a nice way to get the certificates generated just start up
