@@ -7,6 +7,12 @@ class puppet-bootstrap {
       require => Exec["yum clean all"],
     }
 
+    File {
+      owner => "root",
+      group => "root",
+      mode  => "0644",
+    }
+
     # Current Puppet packages won't work if SELinux is enforcing
     if ( $selinux_enforced == "true" ) {
         fail( "SELinux is enforcing" )
@@ -14,9 +20,6 @@ class puppet-bootstrap {
 
     file { "/etc/yum.repos.d/puppet.repo":
         ensure  => file,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
         replace => false,
         source  => "puppet:///modules/puppet-bootstrap/puppet.repo",
         notify  => Exec["yum clean all"],
@@ -66,9 +69,6 @@ class puppet-bootstrap {
 
     file { "/etc/httpd/conf.d/puppetmasterd.conf":
         ensure  => file,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
         content => template("puppet-bootstrap/puppetmasterd.conf.erb"),
         require => Package["httpd"],
         notify  => Service["httpd"],
@@ -76,32 +76,20 @@ class puppet-bootstrap {
 
     file { "/srv/www":
         ensure => directory,
-        owner  => "root",
-        group  => "root",
-        mode   => 0644,
     }
 
     file { "/srv/www/puppet.${domain}":
         ensure  => directory,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
         require => File["/srv/www"],
     }
 
     file { "/srv/www/puppet.${domain}/public":
         ensure  => directory,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
         require => File["/srv/www/puppet.${domain}"],
     }
 
     file { "/srv/www/puppet.${domain}/tmp":
         ensure  => directory,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
         require => File["/srv/www/puppet.${domain}"],
     }
 
@@ -109,7 +97,6 @@ class puppet-bootstrap {
         ensure  => file,
         owner   => "puppet",
         group   => "root",
-        mode    => 0644,
         source  => "puppet:///modules/puppet-bootstrap/config.ru",
         require => [
             File["/srv/www/puppet.${domain}"],
@@ -122,9 +109,6 @@ class puppet-bootstrap {
 
     file { "/etc/puppet/puppet.conf":
         ensure  => file,
-        owner   => "root",
-        group   => "root",
-        mode    => 0644,
         content => template("puppet-bootstrap/puppet.conf.erb"),
         require => Package["puppet-server"],
         notify  => Service["httpd"],
