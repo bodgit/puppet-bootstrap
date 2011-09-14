@@ -1,14 +1,12 @@
-Exec {
-    path => "/sbin:/bin:/usr/sbin:/usr/bin",
-}
+class puppet-bootstrap {
+    Exec {
+      path => "/sbin:/bin:/usr/sbin:/usr/bin",
+    }
 
-Package {
-    require => Exec["yum clean all"],
-}
+    Package {
+      require => Exec["yum clean all"],
+    }
 
-include bootstrap
-
-class bootstrap {
     # Current Puppet packages won't work if SELinux is enforcing
     if ( $selinux_enforced == "true" ) {
         fail( "SELinux is enforcing" )
@@ -20,7 +18,7 @@ class bootstrap {
         group   => "root",
         mode    => 0644,
         replace => false,
-        source  => "file:///root/puppet-bootstrap/puppet.repo",
+        source  => "puppet:///modules/puppet-bootstrap/puppet.repo",
         notify  => Exec["yum clean all"],
     }
 
@@ -71,7 +69,7 @@ class bootstrap {
         owner   => "root",
         group   => "root",
         mode    => 0644,
-        content => template("puppetmasterd.conf.erb"),
+        content => template("puppet-bootstrap/puppetmasterd.conf.erb"),
         require => Package["httpd"],
         notify  => Service["httpd"],
     }
@@ -112,7 +110,7 @@ class bootstrap {
         owner   => "puppet",
         group   => "root",
         mode    => 0644,
-        source  => "file:///root/puppet-bootstrap/config.ru",
+        source  => "puppet:///modules/puppet-bootstrap/config.ru",
         require => [
             File["/srv/www/puppet.${domain}"],
             File["/srv/www/puppet.${domain}/public"],
@@ -127,7 +125,7 @@ class bootstrap {
         owner   => "root",
         group   => "root",
         mode    => 0644,
-        content => template("puppet.conf.erb"),
+        content => template("puppet-bootstrap/puppet.conf.erb"),
         require => Package["puppet-server"],
         notify  => Service["httpd"],
     }
