@@ -3,5 +3,4 @@ and equivalents. Currently assumes puppetmaster has never been installed and
 the puppetmaster is to be referred to as puppet.$domain.
 
 $ git clone git://github.com/bodgit/puppet-bootstrap.git
-$ cd puppet-bootstrap
-$ puppet --templatedir . bootstrap.pp
+$ puppet --modulepath . -e 'include puppet-bootstrap'
